@@ -1,0 +1,91 @@
+@model WebApplicationFES.Models.Purchase
+
+@{
+    ViewData["Title"] = "Edit Purchase";
+    var items = Model.PurchaseItems.ToList();
+    var products = ViewBag.Products as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<div class="container mt-4">
+    <h2>Edit Purchase</h2>
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="PurchaseId" />
+        <div class="form-group">
+            <label asp-for="SupplierId" class="control-label">Supplier</label>
+            <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.Suppliers"></select>
+            <span asp-validation-for="SupplierId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PurchaseDate" class="control-label"></label>
+            <input asp-for="PurchaseDate" class="form-control" type="date" />
+            <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="TotalAmount" class="control-label"></label>
+            <input asp-for="TotalAmount" class="form-control" type="number" step="0.01" readonly />
+            <span asp-validation-for="TotalAmount" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Status" class="control-label"></label>
+            <input asp-for="Status" class="form-control" />
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PaymentMethod" class="control-label"></label>
+            <input asp-for="PaymentMethod" class="form-control" />
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Notes" class="control-label"></label>
+            <textarea asp-for="Notes" class="form-control"></textarea>
+            <span asp-validation-for="Notes" class="text-danger"></span>
+        </div>
+        <h4>Purchase Items</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < items.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <select name="purchaseItems[@i].ProductId" class="form-control">
+                                <option value="">Select Product</option>
+                                @foreach (var product in products)
+                                {
+                                    var prod = product as Microsoft.AspNetCore.Mvc.Rendering.SelectListItem;
+                                    if (items[i].ProductId.ToString() == prod.Value)
+                                    {
+                                        <option value="@prod.Value" selected="selected">@prod.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@prod.Value">@prod.Text</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td><input name="purchaseItems[@i].Quantity" class="form-control" type="number" value="@items[i].Quantity" /></td>
+                        <td><input name="purchaseItems[@i].UnitPrice" class="form-control" type="number" step="0.01" value="@items[i].UnitPrice" /></td>
+                        <td><input name="purchaseItems[@i].TotalPrice" class="form-control" type="number" step="0.01" value="@items[i].TotalPrice" readonly /></td>
+                        <input type="hidden" name="purchaseItems[@i].PurchaseItemId" value="@items[i].PurchaseItemId" />
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="form-group mt-3">
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

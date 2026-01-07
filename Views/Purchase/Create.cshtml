@@ -1,0 +1,99 @@
+@model WebApplicationFES.Models.Purchase
+
+<div class="container-fluid">
+    <h2>Create Purchase</h2>
+
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        
+        <div class="form-group">
+            <label asp-for="SupplierId" class="control-label">Supplier</label>
+            <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.Suppliers"></select>
+            <span asp-validation-for="SupplierId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PurchaseDate" class="control-label"></label>
+            <input asp-for="PurchaseDate" class="form-control" type="date" />
+            <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Status" class="control-label"></label>
+            <select asp-for="Status" class="form-control">
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PaymentMethod" class="control-label"></label>
+            <select asp-for="PaymentMethod" class="form-control">
+                <option value="Cash">Cash</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Notes" class="control-label"></label>
+            <textarea asp-for="Notes" class="form-control"></textarea>
+            <span asp-validation-for="Notes" class="text-danger"></span>
+        </div>
+
+        <div id="purchase-items">
+            <h4>Purchase Items</h4>
+            <div class="purchase-item">
+                <div class="form-group">
+                    <label>Product</label>
+                    <select name="purchaseItems[0].ProductId" class="form-control" asp-items="ViewBag.Products"></select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" name="purchaseItems[0].Quantity" class="form-control" min="1" />
+                </div>
+                <div class="form-group">
+                    <label>Unit Price</label>
+                    <input type="number" name="purchaseItems[0].UnitPrice" class="form-control" step="0.01" />
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-secondary mt-2" onclick="addPurchaseItem()">Add Item</button>
+
+        <div class="form-group mt-3">
+            <input type="submit" value="Create" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        let itemCount = 1;
+        function addPurchaseItem() {
+            const template = `
+                <div class="purchase-item mt-3">
+                    <div class="form-group">
+                        <label>Product</label>
+                        <select name="purchaseItems[${itemCount}].ProductId" class="form-control" asp-items="ViewBag.Products"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" name="purchaseItems[${itemCount}].Quantity" class="form-control" min="1" />
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Price</label>
+                        <input type="number" name="purchaseItems[${itemCount}].UnitPrice" class="form-control" step="0.01" />
+                    </div>
+                </div>
+            `;
+            document.getElementById('purchase-items').insertAdjacentHTML('beforeend', template);
+            itemCount++;
+        }
+    </script>
+} 

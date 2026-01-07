@@ -1,0 +1,75 @@
+@model WebApplicationFES.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container-fluid p-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Product Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Name)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Name)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.SKU)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.SKU)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Category)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Category)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Description)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.PurchasePrice)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.PurchasePrice)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.SellingPrice)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.SellingPrice)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.StockQuantity)</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.StockQuantity <= Model.MinimumStockLevel ? "bg-danger" : "bg-success")">
+                                        @Html.DisplayFor(model => model.StockQuantity)
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.MinimumStockLevel)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.MinimumStockLevel)</dd>
+
+                                <dt class="col-sm-4">Status</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(Model.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.CreatedAt)</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="text-center">
+                                    <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" style="max-height: 300px;" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-primary">Edit</a>
+                        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,80 @@
+@model WebApplicationFES.Models.Payroll
+
+@{
+    ViewData["Title"] = "Edit Payroll";
+}
+
+<div class="container mt-4">
+    <h2>Edit Payroll</h2>
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="PayrollId" />
+        <div class="form-group">
+            <label asp-for="UserId" class="control-label">User</label>
+            <select asp-for="UserId" class="form-control" asp-items="ViewBag.Users"></select>
+            <span asp-validation-for="UserId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PayPeriodStart" class="control-label"></label>
+            <input asp-for="PayPeriodStart" class="form-control" type="date" />
+            <span asp-validation-for="PayPeriodStart" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PayPeriodEnd" class="control-label"></label>
+            <input asp-for="PayPeriodEnd" class="form-control" type="date" />
+            <span asp-validation-for="PayPeriodEnd" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BaseSalary" class="control-label"></label>
+            <input asp-for="BaseSalary" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="BaseSalary" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="OvertimePay" class="control-label"></label>
+            <input asp-for="OvertimePay" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="OvertimePay" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Bonuses" class="control-label"></label>
+            <input asp-for="Bonuses" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Bonuses" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Deductions" class="control-label"></label>
+            <input asp-for="Deductions" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Deductions" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="NetSalary" class="control-label"></label>
+            <input asp-for="NetSalary" class="form-control" type="number" step="0.01" readonly />
+            <span asp-validation-for="NetSalary" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Status" class="control-label"></label>
+            <input asp-for="Status" class="form-control" />
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PaymentDate" class="control-label"></label>
+            <input asp-for="PaymentDate" class="form-control" type="date" />
+            <span asp-validation-for="PaymentDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PaymentMethod" class="control-label"></label>
+            <input asp-for="PaymentMethod" class="form-control" />
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Notes" class="control-label"></label>
+            <textarea asp-for="Notes" class="form-control"></textarea>
+            <span asp-validation-for="Notes" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-3">
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

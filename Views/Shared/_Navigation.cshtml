@@ -1,0 +1,104 @@
+@{
+    // This would typically come from your authentication/authorization system
+    var currentRole = Context.Session.GetString("CurrentRole");
+}
+
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+            <i class="bi bi-house-door"></i> Home
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                @if (currentRole == "Admin")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="User" asp-action="Index">
+                            <i class="bi bi-people"></i> Users
+                        </a>
+                    </li>
+                }
+
+                @if (currentRole == "Customer")
+                {
+                    // Remove all nav-items for Customer (Products, Cart, etc.)
+                }
+                else if (currentRole == "Admin" || currentRole == "InventoryManager")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">
+                            <i class="bi bi-box-seam"></i> Products
+                        </a>
+                    </li>
+                }
+
+                @if (currentRole == "Admin" || currentRole == "InventoryManager")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Supplier" asp-action="Index">
+                            <i class="bi bi-shop"></i> Suppliers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Purchase" asp-action="Index">
+                            <i class="bi bi-cart-plus"></i> Purchases
+                        </a>
+                    </li>
+                }
+
+                @if (currentRole == "Admin" || currentRole == "SalesManager")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Sale" asp-action="Index">
+                            <i class="bi bi-cash-stack"></i> Sales
+                        </a>
+                    </li>
+                }
+
+                @if (currentRole == "Admin" || currentRole == "Accountant")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Expense" asp-action="Index">
+                            <i class="bi bi-receipt"></i> Expenses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Payroll" asp-action="Index">
+                            <i class="bi bi-currency-dollar"></i> Payroll
+                        </a>
+                    </li>
+                }
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> @currentRole
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Change Role</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" asp-controller="Role" asp-action="Logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    .nav-link {
+        padding: 0.5rem 1rem;
+    }
+    .dropdown-item {
+        padding: 0.5rem 1.5rem;
+    }
+    .dropdown-item i {
+        margin-right: 0.5rem;
+    }
+</style> 
