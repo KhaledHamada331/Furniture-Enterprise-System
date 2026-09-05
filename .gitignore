@@ -1,0 +1,7 @@
+.vs/
+.config/
+bin/
+obj/
+*.csproj.user
+appsettings.Development.json
+**/Properties/PublishProfiles/
