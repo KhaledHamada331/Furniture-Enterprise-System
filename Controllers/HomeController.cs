@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationFES.Models;
 
@@ -20,6 +20,15 @@ namespace WebApplicationFES.Controllers
 
         public IActionResult Privacy()
         {
+            return View();
+        }
+
+        [HttpGet]
+        [Route("Home/AccessDenied")]
+        [Route("access-denied")]
+        public IActionResult AccessDenied()
+        {
+            Response.StatusCode = StatusCodes.Status403Forbidden;
             return View();
         }
 

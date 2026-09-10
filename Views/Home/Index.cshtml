@@ -1,5 +1,6 @@
-﻿@{
-    ViewData["Title"] = "Home";
+@{
+    var currentRole = Context.Session.GetString("CurrentRole");
+    var isAdmin = User.IsInRole("Admin") || currentRole == "Admin";
 }
 
 <div class="container">
@@ -8,18 +9,24 @@
         <p class="lead">Please select your role to continue</p>
     </div>
 
-    <div class="row justify-content-center">
-        <!-- Admin Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <i class="bi bi-shield-lock display-4 mb-3 text-danger"></i>
-                    <h3 class="card-title">Administrator</h3>
-                    <p class="card-text">Manage the entire system</p>
-                    <a href="@Url.Action("SelectRole", "Role", new { role = "Admin" })" class="btn btn-danger">Enter as Admin</a>
+    @if (isAdmin)
+    {
+        <!-- Admin Dynamic Card (Visible ONLY to authenticated Admins) -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm border-danger border-2">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-shield-lock-fill display-4 mb-3 text-danger"></i>
+                        <h3 class="card-title text-danger">Administrator Console</h3>
+                        <p class="card-text text-muted">You are authenticated with administrative privileges.</p>
+                        <a href="@Url.Action("Index", "Admin")" class="btn btn-danger px-4">Open Admin Dashboard</a>
+                    </div>
                 </div>
             </div>
         </div>
+    }
+
+    <div class="row justify-content-center">
         <!-- Accountant Card -->
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
@@ -31,10 +38,8 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center">
         <!-- Inventory Manager Card -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body text-center">
                     <i class="bi bi-box display-4 mb-3 text-warning"></i>
@@ -45,7 +50,7 @@
             </div>
         </div>
         <!-- Sales Manager Card -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body text-center">
                     <i class="bi bi-graph-up display-4 mb-3 text-info"></i>
