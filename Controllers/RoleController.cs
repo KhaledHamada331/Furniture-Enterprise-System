@@ -1,3 +1,7 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
@@ -10,6 +14,10 @@ namespace WebApplicationFES.Controllers
         {
             if (!string.IsNullOrEmpty(role))
             {
+                if (role == "Admin")
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
                 TempData["SelectedRole"] = role;
                 return RedirectToAction("Login");
             }
@@ -24,7 +32,7 @@ namespace WebApplicationFES.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string role, string username, string password)
+        public async Task<IActionResult> Login(string role, string username, string password)
         {
             if (string.IsNullOrEmpty(role))
             {
@@ -36,7 +44,21 @@ namespace WebApplicationFES.Controllers
                 ModelState.Remove("Username");
                 if (password == "Nothing")
                 {
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, "Admin"),
+                        new Claim(ClaimTypes.Role, "Admin")
+                    };
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                    };
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
                     HttpContext.Session.SetString("CurrentRole", role);
+                    HttpContext.Session.SetString("CurrentUser", "Admin");
                     return RedirectToAction("AdminDashboard");
                 }
                 ModelState.AddModelError("password", "Invalid admin password.");
@@ -47,9 +69,22 @@ namespace WebApplicationFES.Controllers
             {
                 // Check user exists with username/email, password, and role
                 var db = HttpContext.RequestServices.GetService(typeof(WebApplicationFES.Data.ApplicationDbContext)) as WebApplicationFES.Data.ApplicationDbContext;
-                var user = db.Users.FirstOrDefault(u => (u.Username == username || u.Email == username) && u.Password == password && u.Role == role && u.IsActive);
+                var user = db?.Users.FirstOrDefault(u => (u.Username == username || u.Email == username) && u.Password == password && u.Role == role && u.IsActive);
                 if (user != null)
                 {
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.Role, role)
+                    };
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                    };
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
                     HttpContext.Session.SetString("CurrentRole", role);
                     HttpContext.Session.SetString("CurrentUser", user.Username);
                     switch (role)
@@ -65,13 +100,24 @@ namespace WebApplicationFES.Controllers
             }
         }
 
-        public IActionResult AdminDashboard() => View();
+        [Authorize(Roles = "Admin")]
+        public IActionResult AdminDashboard()
+        {
+            var sessionRole = HttpContext.Session.GetString("CurrentRole");
+            if (!User.IsInRole("Admin") && sessionRole != "Admin")
+            {
+                return RedirectToAction("AccessDenied", "Home");
+            }
+            return View();
+        }
+
         public IActionResult AccountantDashboard() => View();
         public IActionResult InventoryDashboard() => View();
         public IActionResult SalesDashboard() => View();
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }

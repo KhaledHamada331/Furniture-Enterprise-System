@@ -1,6 +1,9 @@
 @{
-    // This would typically come from your authentication/authorization system
+    // Check both Session and Claims for role identification
     var currentRole = Context.Session.GetString("CurrentRole");
+    var isAdmin = User.IsInRole("Admin") || currentRole == "Admin";
+    var isAuthenticated = !string.IsNullOrEmpty(currentRole) || (User.Identity != null && User.Identity.IsAuthenticated);
+    var displayRole = !string.IsNullOrEmpty(currentRole) ? currentRole : (isAdmin ? "Admin" : (User.Identity?.Name ?? "User"));
 }
 
 <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -13,8 +16,13 @@
         </button>
         <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
             <ul class="navbar-nav flex-grow-1">
-                @if (currentRole == "Admin")
+                @if (isAdmin)
                 {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">
+                            <i class="bi bi-speedometer2"></i> Admin Dashboard
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="User" asp-action="Index">
                             <i class="bi bi-people"></i> Users
@@ -24,9 +32,9 @@
 
                 @if (currentRole == "Customer")
                 {
-                    // Remove all nav-items for Customer (Products, Cart, etc.)
+                    // Customer items if any
                 }
-                else if (currentRole == "Admin" || currentRole == "InventoryManager")
+                else if (isAdmin || currentRole == "InventoryManager")
                 {
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">
@@ -35,7 +43,7 @@
                     </li>
                 }
 
-                @if (currentRole == "Admin" || currentRole == "InventoryManager")
+                @if (isAdmin || currentRole == "InventoryManager")
                 {
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Supplier" asp-action="Index">
@@ -49,7 +57,7 @@
                     </li>
                 }
 
-                @if (currentRole == "Admin" || currentRole == "SalesManager")
+                @if (isAdmin || currentRole == "SalesManager")
                 {
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Sale" asp-action="Index">
@@ -58,7 +66,7 @@
                     </li>
                 }
 
-                @if (currentRole == "Admin" || currentRole == "Accountant")
+                @if (isAdmin || currentRole == "Accountant")
                 {
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Expense" asp-action="Index">
@@ -73,16 +81,24 @@
                 }
             </ul>
             <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> @currentRole
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Change Role</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" asp-controller="Role" asp-action="Logout">Logout</a></li>
-                    </ul>
-                </li>
+                @if (isAuthenticated)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> @displayRole
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @if (isAdmin)
+                            {
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index"><i class="bi bi-speedometer2"></i> Admin Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            }
+                            <li><a class="dropdown-item" asp-controller="Home" asp-action="Index"><i class="bi bi-arrow-repeat"></i> Change Role</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" asp-controller="Role" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                }
             </ul>
         </div>
     </div>
